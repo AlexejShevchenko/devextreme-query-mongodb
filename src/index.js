@@ -22,7 +22,7 @@ const {
 function createContext(contextOptions, loadOptions) {
   const getCount = (collection, pipeline) =>
     collection
-      .aggregate(pipeline)
+          .aggregate(pipeline, { "allowDiskUse": true })
       .toArray()
       // Strangely, the pipeline returns an empty array when the "match" part
       // filters out all rows - I would expect to still see the "count" stage
@@ -86,7 +86,7 @@ function createContext(contextOptions, loadOptions) {
           itemProjection
         ),
         ...skipTakePipeline
-      ])
+      ], { "allowDiskUse": true })
       .toArray()
       .then(r =>
         includeDataItems
@@ -207,7 +207,7 @@ function createContext(contextOptions, loadOptions) {
                     item.key
                   ),
                   ...summaryPipeline
-                ])
+                ], { "allowDiskUse": true })
                 .toArray()
             ).then(r =>
               populateSummaryResults(item, loadOptions.groupSummary, r[0])
@@ -306,7 +306,7 @@ function createContext(contextOptions, loadOptions) {
               ...contextOptions.preProcessingPipeline,
               ...completeFilterPipelineDetails.pipeline,
               ...createSummaryPipeline(loadOptions.totalSummary)
-            ])
+            ], { "allowDiskUse": true })
             .toArray()
             .then(r =>
               populateSummaryResults(
@@ -350,7 +350,7 @@ function createContext(contextOptions, loadOptions) {
           ...skipTakePipeline,
           ...selectPipeline,
           ...removeNestedFieldsPipeline
-        ])
+        ], { "allowDiskUse": true })
         .toArray()
         .then(r => r.map(replaceId))
         .then(r => ({ data: r }));
@@ -375,7 +375,7 @@ function createContext(contextOptions, loadOptions) {
               ...contextOptions.preProcessingPipeline,
               ...completeFilterPipelineDetails.pipeline,
               ...createSummaryPipeline(loadOptions.totalSummary)
-            ])
+            ], { "allowDiskUse": true })
             .toArray()
             .then(r =>
               populateSummaryResults(

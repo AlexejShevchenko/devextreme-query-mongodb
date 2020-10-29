@@ -26,7 +26,7 @@ var _require2 = require('./utils'),
 
 function createContext(contextOptions, loadOptions) {
   var getCount = function getCount(collection, pipeline) {
-    return collection.aggregate(pipeline).toArray().then(function (r) {
+    return collection.aggregate(pipeline, { "allowDiskUse": true }).toArray().then(function (r) {
       return r.length > 0 ? r[0].count : 0;
     });
   };
@@ -82,7 +82,7 @@ function createContext(contextOptions, loadOptions) {
   };
 
   var queryGroupData = function queryGroupData(collection, desc, includeDataItems, countSeparately, itemProjection, groupKeyPipeline, sortPipeline, filterPipelineDetails, skipTakePipeline, matchPipeline) {
-    return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(sortPipeline), _toConsumableArray(filterPipelineDetails.pipeline), _toConsumableArray(matchPipeline), _toConsumableArray(createRemoveNestedFieldsPipeline(filterPipelineDetails.nestedFields)), _toConsumableArray(createGroupingPipeline(desc, includeDataItems, countSeparately, groupKeyPipeline, itemProjection)), _toConsumableArray(skipTakePipeline))).toArray().then(function (r) {
+    return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(sortPipeline), _toConsumableArray(filterPipelineDetails.pipeline), _toConsumableArray(matchPipeline), _toConsumableArray(createRemoveNestedFieldsPipeline(filterPipelineDetails.nestedFields)), _toConsumableArray(createGroupingPipeline(desc, includeDataItems, countSeparately, groupKeyPipeline, itemProjection)), _toConsumableArray(skipTakePipeline)), { "allowDiskUse": true }).toArray().then(function (r) {
       return includeDataItems ? r.map(function (i) {
         return _extends({}, i, { items: i.items.map(replaceId) });
       }) : r;
@@ -131,7 +131,7 @@ function createContext(contextOptions, loadOptions) {
     var augmentWithSummaries = function augmentWithSummaries(groupData) {
       return summariesRequired ? groupData.map(function (item) {
         return runSummaryQuery(function () {
-          return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(filterPipelineDetails.pipeline), _toConsumableArray(groupKeyPipeline), _toConsumableArray(matchPipeline), _toConsumableArray(createMatchPipeline(createGroupFieldName(groupIndex), item.key)), _toConsumableArray(summaryPipeline))).toArray();
+          return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(filterPipelineDetails.pipeline), _toConsumableArray(groupKeyPipeline), _toConsumableArray(matchPipeline), _toConsumableArray(createMatchPipeline(createGroupFieldName(groupIndex), item.key)), _toConsumableArray(summaryPipeline)), { "allowDiskUse": true }).toArray();
         }).then(function (r) {
           return populateSummaryResults(item, loadOptions.groupSummary, r[0]);
         });
@@ -173,7 +173,7 @@ function createContext(contextOptions, loadOptions) {
     };
 
     var summary = function summary(resultObject) {
-      return resultObject.totalCount > 0 && loadOptions.totalSummary ? collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(createSummaryPipeline(loadOptions.totalSummary)))).toArray().then(function (r) {
+      return resultObject.totalCount > 0 && loadOptions.totalSummary ? collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(createSummaryPipeline(loadOptions.totalSummary))), { "allowDiskUse": true }).toArray().then(function (r) {
         return populateSummaryResults(resultObject, loadOptions.totalSummary, r[0]);
       }) : Promise.resolve(resultObject);
     };
@@ -189,7 +189,7 @@ function createContext(contextOptions, loadOptions) {
     var removeNestedFieldsPipeline = createRemoveNestedFieldsPipeline(completeFilterPipelineDetails.nestedFields);
 
     var mainQueryResult = function mainQueryResult() {
-      return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(sortPipeline), _toConsumableArray(skipTakePipeline), _toConsumableArray(selectPipeline), _toConsumableArray(removeNestedFieldsPipeline))).toArray().then(function (r) {
+      return collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(sortPipeline), _toConsumableArray(skipTakePipeline), _toConsumableArray(selectPipeline), _toConsumableArray(removeNestedFieldsPipeline)), { "allowDiskUse": true }).toArray().then(function (r) {
         return r.map(replaceId);
       }).then(function (r) {
         return { data: r };
@@ -203,7 +203,7 @@ function createContext(contextOptions, loadOptions) {
     };
 
     var summary = function summary(resultObject) {
-      return resultObject.totalCount > 0 && loadOptions.totalSummary ? collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(createSummaryPipeline(loadOptions.totalSummary)))).toArray().then(function (r) {
+      return resultObject.totalCount > 0 && loadOptions.totalSummary ? collection.aggregate([].concat(_toConsumableArray(contextOptions.preProcessingPipeline), _toConsumableArray(completeFilterPipelineDetails.pipeline), _toConsumableArray(createSummaryPipeline(loadOptions.totalSummary))), { "allowDiskUse": true }).toArray().then(function (r) {
         return populateSummaryResults(resultObject, loadOptions.totalSummary, r[0]);
       }) : Promise.resolve(resultObject);
     };
